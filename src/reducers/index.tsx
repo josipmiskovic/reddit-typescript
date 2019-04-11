@@ -6,7 +6,6 @@ import { ReceivedPostsAction, SendErorAction} from '../actions';
 const initialState = {
     json: {},
     subreddits: {},
-    posts: [],
     fetchingReddit: false,
 };
 

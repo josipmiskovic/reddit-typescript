@@ -18,6 +18,33 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+label
+{
+  font-size: .5em;
+  float:right;
+  margin-top:1em;
+}
+.fetch-time
+{
+  font-size: .5em;
+
+}
+span.error
+{
+  font-size:.8em;
+  margin-top:.5em;
+}
+
+.subreddits
+{
+  list-style: none;
+  padding: 1em 2em;
+}
+.post-title
+{
+  font-size:.8em;
+}
+
 
 .App-link {
   color: #61dafb;

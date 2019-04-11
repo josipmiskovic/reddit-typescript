@@ -1,0 +1,4 @@
+export const RECEIVE_POSTS = "RECEIVE_POSTS";
+export const SEND_ERROR = "SEND_ERROR";
+export const START_FETCHING = "START_FETCHING";
+export const CHANGE_SUBREDDIT = "CHANGE_SUBREDDIT";

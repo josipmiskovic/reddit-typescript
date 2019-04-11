@@ -1,4 +1,4 @@
-import { RECEIVE_POSTS, SEND_ERROR, START_FETCHING, CHANGE_SUBREDDIT } from '../types';
+import { RECEIVE_POSTS, SEND_ERROR, START_FETCHING, CHANGE_SUBREDDIT, FINISH_FETCHING } from '../types';
 
 import { ReceivedPostsAction, SendErorAction} from '../actions';
 
@@ -35,6 +35,11 @@ const mainReducer = (state = initialState, action: ReceivedPostsAction & SendEro
                 error: action.error,
                 fetchingReddit: action.fetchingReddit
 
+            }
+        case FINISH_FETCHING:
+            return {
+                ...state,
+                fetchingReddit: action.fetchingReddit
             }
         case CHANGE_SUBREDDIT:
             return {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Action, Dispatch } from 'redux';
 import './App.css';
-import { fetchPosts, changeSubreddit} from './actions';
+import { performSearch, changeSubreddit} from './actions';
 import Post from './components/Post';
 import ErrorBox from './components/ErrorBox';
 import { IPost } from './components/Post';
@@ -10,10 +10,12 @@ import { IPost } from './components/Post';
 interface Props {
   error: string;
   posts: IPost[];
+  lastFetch: number;
+  fetchingReddit: boolean;
   subreddit: string;
   subreddits: { [key: string]: { posts: IPost[], lastFetch: boolean } } ;
   dispatch: Dispatch<any>;
-  fetchPosts: (subreddit: string) => Dispatch;
+  performSearch: (subreddit: string, force: boolean) => Dispatch;
   changeSubreddit: (subreddit: string) => Dispatch;
 }
 
@@ -40,20 +42,10 @@ class App extends Component<Props, State> {
 
   handleSearchClick(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    const { dispatch, subreddits, fetchPosts, changeSubreddit } = this.props
+    const { subreddits, performSearch, changeSubreddit, fetchingReddit} = this.props
     const { searchValue, forceFetch } = this.state; 
 
-    if(forceFetch){
-      fetchPosts(searchValue);
-    }
-    else{ 
-      if(subreddits[searchValue]){ //It's already in "cache" so just get it from there
-        changeSubreddit(searchValue);
-      }
-      else { //Fetch the data from the API
-        fetchPosts(searchValue);
-      }
-    }
+    performSearch(searchValue, forceFetch);
   }
 
   forceChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -66,7 +58,7 @@ class App extends Component<Props, State> {
 
   render() {
 
-    const { error, subreddit, subreddits } = this.props;
+    const { error, subreddit, subreddits, fetchingReddit, posts, lastFetch} = this.props;
 
     return (
       <div className="App"> 
@@ -86,6 +78,9 @@ class App extends Component<Props, State> {
           </label>
         </form>
 
+          { fetchingReddit && "Loading..."
+
+          }
 
           {  error && 
              <ErrorBox errorCode={error} message="There was an error fetching your request."/>
@@ -101,11 +96,11 @@ class App extends Component<Props, State> {
               { subreddits && subreddits[subreddit] && 
                 
                 <span className="fetch-time">
-                  Fetch time: { subreddits[subreddit].lastFetch.toString() }
+                  Fetch time: { lastFetch.toString() }
                 </span>
               }
               <ul className="subreddits">
-                { subreddits && subreddits[subreddit] && subreddits[subreddit].posts.map((post, i) =>
+                { posts && posts.map((post, i) =>
                   <li key={i}>
                     <Post data={post}/>              
                   </li>
@@ -120,17 +115,24 @@ class App extends Component<Props, State> {
 }
 
 const mapStateToProps = (state: Props) => {
-  const { error, posts, subreddit, subreddits} = state
+  const { error, subreddit, subreddits, fetchingReddit} = state
+
+
+  const { posts, lastFetch } = subreddits[subreddit] || { posts:[], lastFetch: 0}
+
+
   return {
     error,
     posts,
     subreddit,
-    subreddits
+    subreddits,
+    lastFetch,
+    fetchingReddit
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchPosts: (subreddit: string): Dispatch<Action> => dispatch(fetchPosts(subreddit)),
+  performSearch: (subreddit: string, force: boolean): Dispatch<Action> => dispatch(performSearch(subreddit, force)),
   changeSubreddit: (subreddit: string): Dispatch<Action> => dispatch(changeSubreddit(subreddit)),
   dispatch
 });
